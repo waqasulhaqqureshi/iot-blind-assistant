@@ -45,13 +45,14 @@ Verified on 2 November 2026 (Chromium-based browser, local server):
 | OCR on a real photo | Read printed words on the bus (`emisiones`) and dropped single-letter noise |
 | Live camera loop | Fed a synthetic video stream through the real start/stop path: started, detected, announced, idled in battery-saver mode, stopped cleanly |
 | Distance simulator | Warn, danger, clear, and hysteresis behave as designed; the badge changes colour |
+| Hosted copy on GitHub Pages | Loaded TensorFlow.js (WebGL), the detector and the OCR engine, and read a drawn sign correctly; the service worker registered and cached 24 files |
 | Unit tests | 33 tests for the announcer, proximity zones, scene-change check and OCR filter (`npm test`, also run in CI) |
 
 **Not verified yet** (be careful before relying on these):
 
 - A real webcam on a real phone, outdoors, while walking
 - The Bluetooth link and the ESP32 firmware: the sketch in `firmware/` has **not** been compiled or flashed
-- Offline use through the service worker (the browser I tested in does not support service workers)
+- Loading the app with the network switched off: the service worker registers and caches files, but I did not test an offline reload
 - Screen-reader and TalkBack testing, and any testing with blind or low-vision users
 - Measured latency, accuracy and battery drain: no numbers are published because none were collected
 
