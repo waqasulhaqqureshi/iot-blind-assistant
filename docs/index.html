@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#06222b" />
+    <title>IoT Blind Assistant</title>
+    <meta
+      name="description"
+      content="An on-device assistant that describes objects and reads text aloud for visually impaired users, with optional distance-sensor warnings."
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#controls">Skip to controls</a>
+    <header>
+      <h1>IoT Blind Assistant</h1>
+      <p class="tagline">Describes what is in front of you and reads text aloud. Runs on this device.</p>
+      <p id="status" role="status" aria-live="polite">Loading…</p>
+    </header>
+
+    <main>
+      <section class="stage" aria-label="Camera view">
+        <video id="video" playsinline muted hidden></video>
+        <canvas id="overlay" aria-hidden="true"></canvas>
+        <p class="stage-hint">The camera view appears here. Everything important is also spoken aloud.</p>
+      </section>
+
+      <section id="controls" aria-label="Controls">
+        <div class="row">
+          <button id="startBtn" type="button" aria-pressed="false">Start camera</button>
+          <button id="readBtn" type="button" disabled>Read text</button>
+          <label class="button" for="photoInput">Analyze a photo</label>
+          <input id="photoInput" type="file" accept="image/*" capture="environment" />
+        </div>
+
+        <fieldset>
+          <legend>Distance sensor</legend>
+          <div class="row">
+            <button id="sensorBtn" type="button">Connect Bluetooth sensor</button>
+            <label class="check"><input id="simToggle" type="checkbox" /> Simulate a sensor</label>
+            <output id="distance" data-zone="clear" aria-live="off">–</output>
+          </div>
+          <div id="simBox" hidden>
+            <label for="simRange">Simulated distance <output id="simValue">200 cm</output></label>
+            <input id="simRange" type="range" min="0" max="400" value="200" />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Settings</legend>
+          <label for="rate">Speech speed</label>
+          <input id="rate" type="range" min="0.6" max="1.8" step="0.1" value="1" />
+          <label for="conf">Minimum confidence for objects</label>
+          <input id="conf" type="range" min="0.3" max="0.9" step="0.05" value="0.6" />
+          <label class="check"><input id="saver" type="checkbox" /> Battery saver (check less often)</label>
+          <label class="check"><input id="autoText" type="checkbox" /> Read visible text automatically</label>
+          <label class="check"><input id="mute" type="checkbox" /> Mute speech (text log only)</label>
+        </fieldset>
+      </section>
+
+      <section aria-label="What was said">
+        <h2>What was said</h2>
+        <ol id="log" role="log" aria-live="off"></ol>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Object detection: COCO-SSD on TensorFlow.js. Text reading: Tesseract.js. No account, no API key, no image leaves
+        the device.
+      </p>
+      <p><a href="https://github.com/waqasulhaqqureshi/iot-blind-assistant">Source and documentation on GitHub</a></p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

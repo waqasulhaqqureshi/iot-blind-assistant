@@ -1,0 +1,12 @@
+{
+  "name": "iot-blind-assistant",
+  "version": "0.2.0",
+  "description": "On-device web assistant that describes objects, reads text aloud and warns about close obstacles for visually impaired users.",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test",
+    "start": "npx --yes serve docs -l 3000"
+  }
+}
