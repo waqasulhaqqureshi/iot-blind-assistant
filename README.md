@@ -20,17 +20,13 @@ An on-device assistant that **describes what is in front of you, reads text alou
 
 ## How it works
 
-```mermaid
-flowchart LR
-  cam[Camera frame] --> diff{Scene changed?}
-  diff -- no --> skip[Skip: save battery]
-  diff -- yes --> det[COCO-SSD<br/>objects + positions]
-  det --> ann[Announcer<br/>confidence, cooldown, cap]
-  btn[Read text] --> ocr[Tesseract.js OCR] --> clean[OCR filter] --> speech
-  ann --> speech[Speech synthesis]
-  sensor[Ultrasonic sensor<br/>ESP32 over BLE] --> prox[Proximity zones<br/>with hysteresis] --> speech
-  prox --> vib[Vibration]
-```
+![Fig. 1: System overview. The camera feeds a scene-change check, the COCO-SSD detector, a position step and the announcer; the Read text button feeds Tesseract.js OCR and an OCR filter; an ESP32 distance sensor feeds Bluetooth and proximity zones. Speech and vibration are the outputs.](figures/fig1-system-overview.png)
+
+*Figure 1. System overview. Everything inside the dashed box runs in the phone's browser. Dashed blocks (the Bluetooth link and the ESP32) have not been verified on hardware yet.*
+
+![Fig. 5: Decision flow of the announcer. Detections pass a confidence threshold, duplicates are merged, labels spoken within the cooldown are skipped, the top three are kept and given a position, then spoken.](figures/fig5-announcer-flow.png)
+
+*Figure 5. How the announcer decides what to say for objects in the live camera view. Weak guesses are dropped, repeats are suppressed, and at most three objects are spoken, each with where it is.*
 
 The decision logic (what to say and when) is plain JavaScript with no browser dependencies, so it is unit-tested in Node. Details are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -56,6 +52,8 @@ Verified on 2 November 2026 (Chromium-based browser, local server):
 - Screen-reader and TalkBack testing, and any testing with blind or low-vision users
 - Measured latency, accuracy and battery drain: no numbers are published because none were collected
 
+The protocol for collecting those numbers on a real phone, and a results table that is still empty, are in [FIELD_TEST.md](FIELD_TEST.md).
+
 ## Run it
 
 ```bash
@@ -74,6 +72,18 @@ An ESP32 with an HC-SR04 ultrasonic sensor sends `D:<cm>` packets over Bluetooth
 - Web Bluetooth works in Chrome and Edge on Android and desktop. **iPhone/Safari does not support it**; the simulator and everything else still work.
 - The HC-SR04 `ECHO` pin is 5 V; the ESP32 is 3.3 V, so use a voltage divider.
 - Zones: closer than 50 cm is *danger*, closer than 120 cm is *warning*, with a 15 cm hysteresis margin so jitter does not flip the message.
+
+![Fig. 2: Top view of the sensing zones. A wearer at the bottom; a danger zone under 50 cm, a warning zone to 120 cm and a clear zone beyond; the camera splits the view into left, ahead and right; a narrow ultrasonic beam points straight ahead. A chair at 90 cm triggers the warning message.](figures/fig2-sensing-zones.png)
+
+*Figure 2. Sensing zones around the wearer (top view, schematic, not measured data).*
+
+![Fig. 3: State machine of the proximity zones. Clear, Warn and Danger, with the distance thresholds and the spoken message on each transition.](figures/fig3-proximity-state-machine.png)
+
+*Figure 3. The proximity zones as a state machine. Leaving a zone needs a 15 cm margin, which is why a reading that jitters around a threshold stays quiet.*
+
+![Fig. 4: Wiring of the ESP32 and the HC-SR04: 5 V, ground, trigger on GPIO 5, and echo on GPIO 18 through a 1 kilo-ohm and 2 kilo-ohm voltage divider.](figures/fig4-wiring.png)
+
+*Figure 4. Reference wiring. The divider brings the 5 V echo signal down to about 3.3 V for the ESP32. This wiring has not been built or tested yet.*
 
 ## Privacy
 
