@@ -24,10 +24,6 @@ An on-device assistant that **describes what is in front of you, reads text alou
 
 *Figure 1. System overview. Everything inside the dashed box runs in the phone's browser. Dashed blocks (the Bluetooth link and the ESP32) have not been verified on hardware yet.*
 
-![Fig. 5: Decision flow of the announcer. Detections pass a confidence threshold, duplicates are merged, labels spoken within the cooldown are skipped, the top three are kept and given a position, then spoken.](figures/fig5-announcer-flow.png)
-
-*Figure 5. How the announcer decides what to say for objects in the live camera view. Weak guesses are dropped, repeats are suppressed, and at most three objects are spoken, each with where it is.*
-
 The decision logic (what to say and when) is plain JavaScript with no browser dependencies, so it is unit-tested in Node. Details are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## What was tested, and what was not
@@ -84,6 +80,14 @@ An ESP32 with an HC-SR04 ultrasonic sensor sends `D:<cm>` packets over Bluetooth
 ![Fig. 4: Wiring of the ESP32 and the HC-SR04: 5 V, ground, trigger on GPIO 5, and echo on GPIO 18 through a 1 kilo-ohm and 2 kilo-ohm voltage divider.](figures/fig4-wiring.png)
 
 *Figure 4. Reference wiring. The divider brings the 5 V echo signal down to about 3.3 V for the ESP32. This wiring has not been built or tested yet.*
+
+## Calm speech: how the announcer decides what to say
+
+A camera that narrated every frame would be unusable, so the announcer filters first and speaks second.
+
+![Fig. 5: Decision flow of the announcer. Detections pass a confidence threshold, duplicates are merged, labels spoken within the cooldown are skipped, the top three are kept and given a position, then spoken.](figures/fig5-announcer-flow.png)
+
+*Figure 5. How the announcer decides what to say for objects in the live camera view. Weak guesses are dropped, repeats are suppressed, and at most three objects are spoken, each with where it is.*
 
 ## Privacy
 
